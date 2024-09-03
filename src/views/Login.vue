@@ -1,5 +1,8 @@
 <template>
   <div class="login-container">
+    <!-- Alerta -->
+    <Alert ref="alertComponent" />
+
     <div class="login-card">
       <h2 class="login-title">Login <ion-icon name="log-in-outline"></ion-icon></h2>
       <form @submit.prevent="login" class="login-form">
@@ -24,25 +27,30 @@
           />
         </div>
         <button type="submit" class="login-button">
-           Partiu
-           <ion-icon name="enter-outline"></ion-icon>
+          Partiu
+          <ion-icon name="enter-outline"></ion-icon>
         </button>
       </form>
       <div class="register-link">
         <p>Não tem uma conta?</p>
         <router-link to="/register" class="register-button">Cadastre-se</router-link>
       </div>
-    </div>
+    </div>  
   </div>
 </template>
+
 
 <script>
 import { auth, db } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { defineComponent } from 'vue';
+import Alert from '../components/Alert.vue';
 
 export default defineComponent({
+  components: {
+    Alert,
+  },
   data() {
     return {
       email: "",
@@ -63,23 +71,30 @@ export default defineComponent({
         if (userDoc.exists()) {
           const userRole = userDoc.data().role;
 
-          if (userRole === "teacher") {
-            this.$router.push("/teacher-dashboard");
-          } else {
-            this.$router.push("/student-dashboard");
-          }
+          // Exibe alerta de sucesso
+          this.$refs.alertComponent.showAlert('Login realizado com sucesso!', 'success');
+
+          // Redireciona para o dashboard correto
+          setTimeout(() => {
+            if (userRole === "teacher") {
+              this.$router.push("/teacher-dashboard");
+            } else {
+              this.$router.push("/student-dashboard");
+            }
+          }, 2000);
         } else {
           console.error("Documento do usuário não encontrado no Firestore.");
-          // Opcional: Exibir uma mensagem de erro para o usuário
+          this.$refs.alertComponent.showAlert('Erro ao obter dados do usuário. Tente novamente.', 'error');
         }
       } catch (error) {
         console.error("Erro ao fazer login:", error);
-        // Opcional: Exibir uma mensagem de erro para o usuário
+        this.$refs.alertComponent.showAlert('Erro ao fazer login, tente novamente.', 'error');
       }
     },
   },
 });
 </script>
+
 
 <style scoped>
 .login-container {

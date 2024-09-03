@@ -1,6 +1,8 @@
-<!-- src/views/Register.vue -->
 <template>
   <div class="register-container">
+    <!-- Alerta -->
+    <Alert ref="alertComponent" />
+
     <div class="register-card">
       <h2 class="register-title">Registrar <ion-icon name="person-add-outline"></ion-icon></h2>
       <form @submit.prevent="register" class="register-form">
@@ -34,12 +36,16 @@
 </template>
 
 <script>
+import Alert from '../components/Alert.vue';
 import { auth, db } from '../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { defineComponent } from 'vue';
 
 export default defineComponent({
+  components: {
+    Alert,
+  },
   data() {
     return {
       name: '',
@@ -53,13 +59,19 @@ export default defineComponent({
       try {
         // Verifica se o usuário é professor e se o email é institucional
         if (this.role === 'teacher' && !this.email.endsWith('@professor.ce.gov.br')) {
-          alert('Somente emails institucionais podem ser usados para cadastrar-se como professor.');
+          this.$refs.alertComponent.showAlert(
+            'Somente emails institucionais podem ser usados para cadastrar-se como professor.',
+            'error'
+          );
           return;
         }
 
         // Verifica se o usuário é aluno e se o email é institucional
         if (this.role === 'student' && !this.email.endsWith('@aluno.ce.gov.br')) {
-          alert('Somente emails institucionais podem ser usados para cadastrar-se como aluno.');
+          this.$refs.alertComponent.showAlert(
+            'Somente emails institucionais podem ser usados para cadastrar-se como aluno.',
+            'error'
+          );
           return;
         }
 
@@ -77,16 +89,19 @@ export default defineComponent({
           role: this.role,
         });
 
-        // Redireciona para a tela de login
-        this.$router.push('/login');
+        // Exibe o alerta de sucesso
+        this.$refs.alertComponent.showAlert('Registro realizado com sucesso!', 'success');
+
+        // Redireciona para a tela de login após um pequeno delay para mostrar o alerta
+        setTimeout(() => {
+          this.$router.push('/login');
+        }, 2000);
       } catch (error) {
         console.error('Erro ao registrar:', error);
-        alert('Erro ao registrar, tente novamente.');
+        this.$refs.alertComponent.showAlert('Erro ao registrar, tente novamente.', 'error');
       }
-    }
-
+    },
   },
-
 });
 </script>
 

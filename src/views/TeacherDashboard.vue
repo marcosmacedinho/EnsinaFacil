@@ -1,5 +1,8 @@
 <template>
   <div class="teacher-dashboard">
+    <!-- Componente Alert -->
+    <Alert :message="statusMessage" @clear="clearAlert" />
+
     <h2>Bem-vindo, Professor!</h2>
 
     <!-- Caixa de Envio de Recursos -->
@@ -11,8 +14,7 @@
 
         <div class="resource-type">
           <label>
-            <input type="radio" value="file" v-model="resourceType" /> Arquivo <ion-icon
-              name="document-outline"></ion-icon>
+            <input type="radio" value="file" v-model="resourceType" /> Arquivo <ion-icon name="document-outline"></ion-icon>
           </label>
           <label>
             <input type="radio" value="link" v-model="resourceType" /> Link <ion-icon name="link-outline"></ion-icon>
@@ -26,14 +28,8 @@
           <input v-model="link" type="url" placeholder="URL do Link" class="input-field" />
         </div>
 
-        <button type="submit" class="submit-button">{{ isEditing ? 'Atualizar' : 'Enviar' }} <ion-icon
-            name="send"></ion-icon></button>
+        <button type="submit" class="submit-button">{{ isEditing ? 'Atualizar' : 'Enviar' }} <ion-icon name="send"></ion-icon></button>
       </form>
-
-      <!-- Mensagem de status -->
-      <div v-if="statusMessage" class="status-message">
-        <ion-icon name="information-circle-outline"></ion-icon> {{ statusMessage }}
-      </div>
     </div>
 
     <!-- Caixa de Recursos Enviados -->
@@ -42,8 +38,7 @@
       <ul class="resource-list">
         <li v-for="resource in resources" :key="resource.id" class="resource-item">
           <strong>{{ resource.title }}</strong> - {{ resource.description }}
-          <a :href="resource.url" target="_blank" class="resource-link">Acessar <ion-icon
-              name="open-outline"></ion-icon></a>
+          <a :href="resource.url" target="_blank" class="resource-link">Acessar <ion-icon name="open-outline"></ion-icon></a>
           <div class="dropdown">
             <button class="dropdown-btn"><ion-icon name="ellipsis-vertical-outline"></ion-icon></button>
             <div class="dropdown-content">
@@ -78,25 +73,37 @@
   </div>
 </template>
 
-
 <script>
 import { ref, onMounted } from 'vue';
+import Alert from '../components/Alert.vue'; // Certifique-se de ajustar o caminho conforme a localização do seu componente Alert
 import { db } from '../firebase';
 import { collection, addDoc, getDocs, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 export default {
+  components: {
+    Alert
+  },
   setup() {
     const title = ref('');
     const description = ref('');
     const resourceType = ref('file');
     const link = ref('');
     const file = ref(null);
-    const statusMessage = ref(null);
+    const statusMessage = ref('');
     const resources = ref([]);
     const accesses = ref([]);
     const isEditing = ref(false);
     const currentResourceId = ref(null);
+
+    const showAlert = (message) => {
+      statusMessage.value = message;
+      setTimeout(() => { statusMessage.value = ''; }, 5000); // Remove mensagem após 5 segundos
+    };
+
+    const clearAlert = () => {
+      statusMessage.value = '';
+    };
 
     const handleSubmit = async () => {
       if (isEditing.value) {
@@ -126,9 +133,7 @@ export default {
           createdAt: new Date(),
         });
 
-        statusMessage.value = 'Recurso enviado com sucesso!';
-        setTimeout(() => { statusMessage.value = null; }, 5000); // Remove mensagem após 5 segundos
-
+        showAlert('Recurso enviado com sucesso!');
         fetchResources();
         // Limpar campos
         title.value = '';
@@ -138,8 +143,7 @@ export default {
         isEditing.value = false;
         currentResourceId.value = null;
       } catch (err) {
-        statusMessage.value = 'Erro ao enviar o recurso. Tente novamente mais tarde.';
-        setTimeout(() => { statusMessage.value = null; }, 5000); // Remove mensagem após 5 segundos
+        showAlert('Erro ao enviar o recurso. Tente novamente mais tarde.');
         console.error(err);
       }
     };
@@ -163,9 +167,7 @@ export default {
           url: resourceUrl,
         });
 
-        statusMessage.value = 'Recurso atualizado com sucesso!';
-        setTimeout(() => { statusMessage.value = null; }, 5000); // Remove mensagem após 5 segundos
-
+        showAlert('Recurso atualizado com sucesso!');
         fetchResources();
         // Limpar campos
         title.value = '';
@@ -175,8 +177,7 @@ export default {
         isEditing.value = false;
         currentResourceId.value = null;
       } catch (err) {
-        statusMessage.value = 'Erro ao atualizar o recurso. Tente novamente mais tarde.';
-        setTimeout(() => { statusMessage.value = null; }, 5000); // Remove mensagem após 5 segundos
+        showAlert('Erro ao atualizar o recurso. Tente novamente mais tarde.');
         console.error(err);
       }
     };
@@ -186,8 +187,7 @@ export default {
         const querySnapshot = await getDocs(collection(db, 'resources'));
         resources.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       } catch (err) {
-        statusMessage.value = 'Erro ao carregar os recursos.';
-        setTimeout(() => { statusMessage.value = null; }, 5000); // Remove mensagem após 5 segundos
+        showAlert('Erro ao carregar os recursos.');
         console.error(err);
       }
     };
@@ -197,22 +197,18 @@ export default {
         const querySnapshot = await getDocs(collection(db, 'access_logs'));
         accesses.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       } catch (err) {
-        statusMessage.value = 'Erro ao carregar os logs de acesso.';
-        setTimeout(() => { statusMessage.value = null; }, 5000); // Remove mensagem após 5 segundos
+        showAlert('Erro ao carregar os logs de acesso.');
         console.error(err);
       }
     };
 
     const deleteResource = async (resourceId) => {
       try {
-        // Deletar o recurso do Firestore
         await deleteDoc(doc(db, 'resources', resourceId));
-        statusMessage.value = 'Recurso excluído com sucesso!';
-        setTimeout(() => { statusMessage.value = null; }, 5000); // Remove mensagem após 5 segundos
+        showAlert('Recurso excluído com sucesso!');
         fetchResources();
       } catch (err) {
-        statusMessage.value = 'Erro ao excluir o recurso.';
-        setTimeout(() => { statusMessage.value = null; }, 5000); // Remove mensagem após 5 segundos
+        showAlert('Erro ao excluir o recurso.');
         console.error(err);
       }
     };
@@ -240,8 +236,8 @@ export default {
 
     const formatDate = (timestamp) => {
       if (!timestamp) return '';
-      const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp.seconds * 1000);
-      return date.toLocaleString();
+      const date = new Date(timestamp.seconds * 1000);
+      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
     };
 
     return {
@@ -250,20 +246,22 @@ export default {
       resourceType,
       link,
       file,
-      statusMessage,
       resources,
       accesses,
+      isEditing,
+      currentResourceId,
       handleSubmit,
       handleFileUpload,
-      formatDate,
       deleteResource,
       editResource,
-      updateResource,
-      isEditing,
+      formatDate,
+      statusMessage,
+      clearAlert
     };
   },
 };
 </script>
+
 
 <style scoped>
 .teacher-dashboard {
