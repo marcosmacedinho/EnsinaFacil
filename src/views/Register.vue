@@ -51,27 +51,40 @@ export default defineComponent({
   methods: {
     async register() {
       try {
+        // Verifica se o usuário é professor e se o email é institucional
         if (this.role === 'teacher' && !this.email.endsWith('@professor.ce.gov.br')) {
           alert('Somente emails institucionais podem ser usados para cadastrar-se como professor.');
           return;
         }
 
+        // Verifica se o usuário é aluno e se o email é institucional
+        if (this.role === 'student' && !this.email.endsWith('@aluno.ce.gov.br')) {
+          alert('Somente emails institucionais podem ser usados para cadastrar-se como aluno.');
+          return;
+        }
+
+        // Cria o usuário com email e senha
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           this.email,
           this.password
         );
+
+        // Salva os dados do usuário no Firestore
         await setDoc(doc(db, 'users', userCredential.user.uid), {
           name: this.name,
           email: this.email,
           role: this.role,
         });
+
+        // Redireciona para a tela de login
         this.$router.push('/login');
       } catch (error) {
         console.error('Erro ao registrar:', error);
-        // Opcional: Exibir uma mensagem de erro para o usuário
+        alert('Erro ao registrar, tente novamente.');
       }
-    },
+    }
+
   },
 
 });
