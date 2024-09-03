@@ -1,15 +1,19 @@
 <template>
-  <div class="student-dashboard">
+  <div :class="['student-dashboard', { dark: isDarkTheme }]">
     <!-- Cabeçalho -->
     <header class="dashboard-header">
       <h2>Bem-vindo, Aluno!</h2>
+      <button @click="toggleTheme" class="theme-toggle-button">
+        <ion-icon :name="isDarkTheme ? 'moon' : 'sun'"></ion-icon>
+        <span>{{ isDarkTheme ? 'Modo Claro' : 'Modo Escuro' }}</span>
+      </button>
     </header>
 
     <!-- Conteúdo Principal -->
     <div class="dashboard-content">
       <!-- Materiais Didáticos -->
       <section class="section materials">
-        <h3>Materiais Didáticos</h3>
+        <h3><ion-icon name="document-text"></ion-icon> Materiais Didáticos</h3>
         <ul class="resource-list">
           <li v-for="material in materials" :key="material.id" class="resource-item">
             <div class="resource-info">
@@ -17,7 +21,7 @@
               <p>{{ material.description }}</p>
             </div>
             <a @click="recordAccess(material)" :href="material.url" target="_blank" class="btn btn-primary">
-              Acessar
+              <ion-icon name="arrow-forward-outline"></ion-icon> Acessar
             </a>
           </li>
         </ul>
@@ -25,7 +29,7 @@
 
       <!-- Links de Videoaulas -->
       <section class="section videos">
-        <h3>Links de Videoaulas</h3>
+        <h3><ion-icon name="videocam"></ion-icon> Links de Videoaulas</h3>
         <ul class="resource-list">
           <li v-for="video in videos" :key="video.id" class="resource-item">
             <div class="resource-info">
@@ -33,7 +37,7 @@
               <p>{{ video.description }}</p>
             </div>
             <a @click="recordAccess(video)" :href="video.url" target="_blank" class="btn btn-primary">
-              Assistir
+              <ion-icon name="play-outline"></ion-icon> Assistir
             </a>
           </li>
         </ul>
@@ -41,9 +45,10 @@
 
       <!-- Frequência Diária -->
       <section class="section attendance">
-        <h3>Frequência Diária</h3>
+        <h3><ion-icon name="calendar"></ion-icon> Frequência Diária</h3>
         <ul class="attendance-list">
           <li v-for="entry in attendance" :key="entry.id" class="attendance-item">
+            <ion-icon name="time-outline"></ion-icon>
             <strong>{{ entry.date }}</strong> - {{ entry.time }}
           </li>
         </ul>
@@ -73,6 +78,7 @@ export default {
     const videos = ref([]);
     const attendance = ref([]);
     const error = ref(null);
+    const isDarkTheme = ref(false); // Controle do tema
     let resourcesUnsubscribe = null;
     let attendanceUnsubscribe = null;
 
@@ -123,44 +129,50 @@ export default {
     };
 
     const recordAccess = async (resource) => {
-  try {
-    if (auth.currentUser) {
-      const userEmail = auth.currentUser.email;
-      console.log("User email:", userEmail); // Log do email do usuário
+      try {
+        if (auth.currentUser) {
+          const userEmail = auth.currentUser.email;
+          console.log("User email:", userEmail); // Log do email do usuário
 
-      // Busque o usuário no Firestore usando o email
-      const userQuery = query(
-        collection(db, "users"),
-        where("email", "==", userEmail)
-      );
-      const userSnapshot = await getDocs(userQuery);
+          // Busque o usuário no Firestore usando o email
+          const userQuery = query(
+            collection(db, "users"),
+            where("email", "==", userEmail)
+          );
+          const userSnapshot = await getDocs(userQuery);
 
-      if (!userSnapshot.empty) {
-        const userData = userSnapshot.docs[0].data();
-        console.log("User data retrieved:", userData); // Log dos dados do usuário
+          if (!userSnapshot.empty) {
+            const userData = userSnapshot.docs[0].data();
+            console.log("User data retrieved:", userData); // Log dos dados do usuário
 
-        // Registre o acesso no Firestore
-        await addDoc(collection(db, "access_logs"), {
-          resourceId: resource.id,
-          resourceTitle: resource.title,
-          accessedBy: userData.name || "Desconhecido",
-          accessedAt: new Date(),
-        });
-      } else {
-        console.warn("User not found in Firestore");
+            // Registre o acesso no Firestore
+            await addDoc(collection(db, "access_logs"), {
+              resourceId: resource.id,
+              resourceTitle: resource.title,
+              accessedBy: userData.name || "Desconhecido",
+              accessedAt: new Date(),
+            });
+          } else {
+            console.warn("User not found in Firestore");
+          }
+        } else {
+          console.error("No user is currently authenticated.");
+        }
+      } catch (err) {
+        console.error("Error recording access:", err);
       }
-    } else {
-      console.error("No user is currently authenticated.");
-    }
-  } catch (err) {
-    console.error("Error recording access:", err);
-  }
-};
+    };
 
-
-
+    const toggleTheme = () => {
+      isDarkTheme.value = !isDarkTheme.value;
+      localStorage.setItem('theme', isDarkTheme.value ? 'dark' : 'light');
+    };
 
     onMounted(() => {
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        isDarkTheme.value = savedTheme === 'dark';
+      }
       fetchResources();
       fetchAttendance();
     });
@@ -176,6 +188,8 @@ export default {
       attendance,
       error,
       recordAccess,
+      isDarkTheme,
+      toggleTheme,
     };
   },
 };
@@ -185,10 +199,15 @@ export default {
 .student-dashboard {
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  background: #f9f9f9;
   min-height: 100vh;
   font-family: "Arial", sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
+  padding: 20px;
+}
+
+.student-dashboard.dark {
+  background: #2c2c2c;
+  color: #ffffff;
 }
 
 .dashboard-header {
@@ -199,6 +218,28 @@ export default {
   text-align: center;
   margin-bottom: 20px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.student-dashboard.dark .dashboard-header {
+  background: #333;
+  color: #ffffff;
+}
+
+.theme-toggle-button {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  font-size: 1rem;
+}
+
+.theme-toggle-button ion-icon {
+  margin-left: 5px;
+  font-size: 1.2rem;
 }
 
 .dashboard-content {
@@ -216,10 +257,24 @@ export default {
   flex-direction: column;
 }
 
+.student-dashboard.dark .section {
+  background: #444;
+}
+
 .section h3 {
   margin-bottom: 15px;
   color: #333;
   font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.student-dashboard.dark .section h3 {
+  color: #ddd;
+}
+
+.section h3 ion-icon {
+  margin-right: 8px;
 }
 
 .resource-list,
@@ -237,6 +292,11 @@ export default {
   padding: 10px 0;
 }
 
+.student-dashboard.dark .resource-item,
+.student-dashboard.dark .attendance-item {
+  border-bottom: 1px solid #666;
+}
+
 .resource-info {
   flex: 1;
 }
@@ -247,26 +307,22 @@ export default {
   padding: 8px 16px;
   text-decoration: none;
   border-radius: 8px;
-  font-weight: bold;
-  text-align: center;
-  transition: background 0.3s ease;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
 }
 
-.btn-primary {
-  background: #007bff;
+.student-dashboard.dark .btn {
+  background: #333;
 }
 
-.btn-primary:hover {
-  background: #0056b3;
-}
-
-.attendance-item {
-  color: #666;
+.btn ion-icon {
+  margin-right: 5px;
 }
 
 .error-message {
-  color: #dc3545;
+  color: red;
+  font-size: 1rem;
   margin-top: 20px;
-  font-weight: bold;
 }
 </style>
