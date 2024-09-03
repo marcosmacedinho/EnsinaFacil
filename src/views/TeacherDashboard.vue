@@ -308,8 +308,15 @@ export default {
   height: 100px;
 }
 
-.resource-type {
+.resource-type{
+  gap: 20px;
+  flex-direction: row;
+display: flex;
+}
+.resource-type label{
   margin-bottom: 10px;
+  display: flex;
+  align-items: center;
 }
 
 .file-input {
@@ -380,12 +387,8 @@ export default {
   margin-left: 5px;
 }
 
-.submit-button:hover {
-  background: #0056b3;
-}
-
 .resource-list {
-  list-style: none;
+  list-style-type: none;
   padding: 0;
 }
 
@@ -393,15 +396,18 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
   padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  position: relative;
+  border-bottom: 1px solid #ddd;
 }
 
 .resource-link {
   color: #007bff;
+  text-decoration: none;
+  margin-right: 20px;
+}
+
+.resource-link:hover {
+  text-decoration: underline;
 }
 
 .dropdown {
@@ -412,7 +418,6 @@ export default {
 .dropdown-btn {
   background: none;
   border: none;
-  font-size: 1.5rem;
   cursor: pointer;
 }
 
@@ -420,24 +425,22 @@ export default {
   display: none;
   position: absolute;
   right: 0;
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
   z-index: 1;
+  border-radius: 8px;
 }
 
 .dropdown-content a {
-  display: flex;
-  align-items: center;
-  padding: 8px 16px;
-  color: #007bff;
+  color: black;
+  padding: 12px 16px;
   text-decoration: none;
+  display: block;
 }
 
 .dropdown-content a:hover {
-  background: #f1f1f1;
-  cursor: pointer;
+  background-color: #f1f1f1;
 }
 
 .dropdown:hover .dropdown-content {
@@ -445,9 +448,18 @@ export default {
 }
 
 .status-message {
-  color: green;
-  margin-bottom: 20px;
-  font-weight: bold;
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #e7f3fe;
+  border-left: 6px solid #2196F3;
+  color: #31708f;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.status-message ion-icon {
+  margin-right: 10px;
 }
 
 .access-table {
@@ -455,21 +467,25 @@ export default {
   border-collapse: collapse;
 }
 
-.access-table th,
-.access-table td {
-  border-bottom: 1px solid #ddd;
-  padding: 10px;
-  text-align: center;
-  border: 1px solid #909090;
+.access-table th, .access-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
 }
 
 .access-table th {
   background-color: #f2f2f2;
+  font-weight: bold;
+}
+
+.access-table td {
+  background-color: #fff;
 }
 
 .access-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
+
 
 .teacher-dashboard ion-icon {
   margin-left: 8px;

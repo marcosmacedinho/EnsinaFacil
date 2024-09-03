@@ -6,33 +6,15 @@
       <form @submit.prevent="register" class="register-form">
         <div class="input-group">
           <ion-icon name="person-outline" class="input-icon"></ion-icon>
-          <input
-            v-model="name"
-            type="text"
-            placeholder="Nome"
-            class="register-input"
-            required
-          />
+          <input v-model="name" type="text" placeholder="Nome" class="register-input" required />
         </div>
         <div class="input-group">
           <ion-icon name="mail-outline" class="input-icon"></ion-icon>
-          <input
-            v-model="email"
-            type="email"
-            placeholder="Email"
-            class="register-input"
-            required
-          />
+          <input v-model="email" type="email" placeholder="Email" class="register-input" required />
         </div>
         <div class="input-group">
           <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
-          <input
-            v-model="password"
-            type="password"
-            placeholder="Senha"
-            class="register-input"
-            required
-          />
+          <input v-model="password" type="password" placeholder="Senha" class="register-input" required />
         </div>
         <div class="select-group">
           <ion-icon name="school-outline" class="select-icon"></ion-icon>
@@ -69,6 +51,11 @@ export default defineComponent({
   methods: {
     async register() {
       try {
+        if (this.role === 'teacher' && !this.email.endsWith('@professor.ce.gov.br')) {
+          alert('Somente emails institucionais podem ser usados para cadastrar-se como professor.');
+          return;
+        }
+
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           this.email,
@@ -86,6 +73,7 @@ export default defineComponent({
       }
     },
   },
+
 });
 </script>
 
@@ -96,14 +84,14 @@ export default defineComponent({
   align-items: center;
   height: 100vh;
   background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
-  font-family: 'Arial', sans-serif;  
+  font-family: 'Arial', sans-serif;
 }
 
 .register-card {
   background: white;
   padding: 20px;
   border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 360px;
   text-align: center;
@@ -139,7 +127,8 @@ export default defineComponent({
 
 .register-input,
 .register-select {
-  padding: 12px 12px 12px 40px; /* Add left padding for icon */
+  padding: 12px 12px 12px 40px;
+  /* Add left padding for icon */
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1em;

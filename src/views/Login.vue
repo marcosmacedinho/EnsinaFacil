@@ -24,7 +24,8 @@
           />
         </div>
         <button type="submit" class="login-button">
-          <ion-icon name="enter-outline"></ion-icon> Partiu
+           Partiu
+           <ion-icon name="enter-outline"></ion-icon>
         </button>
       </form>
       <div class="register-link">
@@ -105,6 +106,9 @@ export default defineComponent({
   margin-bottom: 20px;
   color: #333;
   font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .login-form {
