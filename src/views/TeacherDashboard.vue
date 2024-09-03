@@ -11,7 +11,8 @@
 
         <div class="resource-type">
           <label>
-            <input type="radio" value="file" v-model="resourceType" /> Arquivo <ion-icon name="document-outline"></ion-icon>
+            <input type="radio" value="file" v-model="resourceType" /> Arquivo <ion-icon
+              name="document-outline"></ion-icon>
           </label>
           <label>
             <input type="radio" value="link" v-model="resourceType" /> Link <ion-icon name="link-outline"></ion-icon>
@@ -25,7 +26,8 @@
           <input v-model="link" type="url" placeholder="URL do Link" class="input-field" />
         </div>
 
-        <button type="submit" class="submit-button">{{ isEditing ? 'Atualizar' : 'Enviar' }} <ion-icon name="send-outline"></ion-icon></button>
+        <button type="submit" class="submit-button">{{ isEditing ? 'Atualizar' : 'Enviar' }} <ion-icon
+            name="send"></ion-icon></button>
       </form>
 
       <!-- Mensagem de status -->
@@ -40,7 +42,8 @@
       <ul class="resource-list">
         <li v-for="resource in resources" :key="resource.id" class="resource-item">
           <strong>{{ resource.title }}</strong> - {{ resource.description }}
-          <a :href="resource.url" target="_blank" class="resource-link">Acessar <ion-icon name="open-outline"></ion-icon></a>
+          <a :href="resource.url" target="_blank" class="resource-link">Acessar <ion-icon
+              name="open-outline"></ion-icon></a>
           <div class="dropdown">
             <button class="dropdown-btn"><ion-icon name="ellipsis-vertical-outline"></ion-icon></button>
             <div class="dropdown-content">
@@ -308,15 +311,18 @@ export default {
   height: 100px;
 }
 
-.resource-type{
-  gap: 20px;
+.resource-type {
+  gap: 30px;
   flex-direction: row;
-display: flex;
-}
-.resource-type label{
-  margin-bottom: 10px;
   display: flex;
   align-items: center;
+  height: 50px;
+}
+
+.resource-type label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .file-input {
@@ -373,7 +379,7 @@ display: flex;
 .submit-button {
   background: #007bff;
   color: white;
-  padding: 10px 20px;
+  padding: 10px 15px;
   border: none;
   border-radius: 8px;
   font-weight: bold;
@@ -427,7 +433,7 @@ display: flex;
   right: 0;
   background-color: #f9f9f9;
   min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
   border-radius: 8px;
 }
@@ -467,7 +473,8 @@ display: flex;
   border-collapse: collapse;
 }
 
-.access-table th, .access-table td {
+.access-table th,
+.access-table td {
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
@@ -487,10 +494,8 @@ display: flex;
 }
 
 
-.teacher-dashboard ion-icon {
+/* .teacher-dashboard ion-icon {
   margin-left: 8px;
   margin-right: 8px;
-}
-
+} */
 </style>
-

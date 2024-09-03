@@ -2,11 +2,13 @@
   <div :class="['student-dashboard', { dark: isDarkTheme }]">
     <!-- Cabeçalho -->
     <header class="dashboard-header">
-      <h2>Bem-vindo, Aluno!</h2>
-      <button @click="toggleTheme" class="theme-toggle-button">
-        <ion-icon :name="isDarkTheme ? 'moon' : 'sun'"></ion-icon>
-        <span>{{ isDarkTheme ? 'Modo Claro' : 'Modo Escuro' }}</span>
-      </button>
+      <div class="header-content">
+        <h2>Bem-vindo, Aluno!</h2>
+        <button @click="toggleTheme" class="theme-toggle-button">
+          <ion-icon :name="isDarkTheme ? 'moon-outline' : 'sunny-outline'"></ion-icon>
+          <span>{{ isDarkTheme ? 'Modo Claro' : 'Modo Escuro' }}</span>
+        </button>
+      </div>
     </header>
 
     <!-- Conteúdo Principal -->
@@ -220,6 +222,12 @@ export default {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .student-dashboard.dark .dashboard-header {
   background: #333;
   color: #ffffff;
@@ -238,8 +246,8 @@ export default {
 }
 
 .theme-toggle-button ion-icon {
-  margin-left: 5px;
-  font-size: 1.2rem;
+  margin-right: 5px;
+  font-size: 1.6rem;
 }
 
 .dashboard-content {
@@ -312,17 +320,20 @@ export default {
   align-items: center;
 }
 
-.student-dashboard.dark .btn {
-  background: #333;
-}
-
 .btn ion-icon {
   margin-right: 5px;
 }
 
+.student-dashboard.dark .btn {
+  background: #555;
+}
+
 .error-message {
-  color: red;
-  font-size: 1rem;
+  background: #ff4d4d;
+  color: white;
+  padding: 10px;
+  border-radius: 8px;
+  text-align: center;
   margin-top: 20px;
 }
 </style>
