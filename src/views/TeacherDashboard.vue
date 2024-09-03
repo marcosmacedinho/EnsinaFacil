@@ -5,7 +5,7 @@
     <!-- Caixa de Envio de Recursos -->
     <div class="box">
       <h3>{{ isEditing ? 'Editar Recurso' : 'Enviar Recurso' }}</h3>
-      <form @submit.prevent="isEditing ? updateResource() : uploadResource" class="upload-form">
+      <form @submit.prevent="handleSubmit" class="upload-form">
         <input v-model="title" type="text" placeholder="Título" required class="input-field" />
         <textarea v-model="description" placeholder="Descrição" required class="input-field textarea"></textarea>
 
@@ -91,6 +91,14 @@ export default {
     const accesses = ref([]);
     const isEditing = ref(false);
     const currentResourceId = ref(null);
+
+    const handleSubmit = async () => {
+      if (isEditing.value) {
+        await updateResource();
+      } else {
+        await uploadResource();
+      }
+    };
 
     const uploadResource = async () => {
       try {
@@ -239,7 +247,7 @@ export default {
       statusMessage,
       resources,
       accesses,
-      uploadResource,
+      handleSubmit,
       handleFileUpload,
       formatDate,
       deleteResource,
@@ -250,8 +258,6 @@ export default {
   },
 };
 </script>
-
-
 
 <style scoped>
 .teacher-dashboard {
@@ -389,7 +395,9 @@ export default {
 .access-table td {
   border-bottom: 1px solid #ddd;
   padding: 10px;
-  text-align: left;
+  text-align: center;
+  border: 1px solid #909090;
+
 }
 
 .access-table th {
@@ -400,3 +408,4 @@ export default {
   background-color: #f9f9f9;
 }
 </style>
+
