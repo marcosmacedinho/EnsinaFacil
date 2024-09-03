@@ -1,9 +1,9 @@
 <template>
   <div class="teacher-dashboard">
-    <!-- Componente Alert -->
-    <Alert :message="statusMessage" @clear="clearAlert" />
-
     <h2>Bem-vindo, Professor!</h2>
+
+    <!-- Alert de Mensagem de Status -->
+    <Alert ref="alertComponent" />
 
     <!-- Caixa de Envio de Recursos -->
     <div class="box">
@@ -74,13 +74,13 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue';
-import Alert from '../components/Alert.vue'; // Certifique-se de ajustar o caminho conforme a localização do seu componente Alert
+import { ref, onMounted, defineComponent } from 'vue';
 import { db } from '../firebase';
 import { collection, addDoc, getDocs, onSnapshot, doc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import Alert from '../components/Alert.vue'; // Importa o componente Alert
 
-export default {
+export default defineComponent({
   components: {
     Alert
   },
@@ -90,19 +90,17 @@ export default {
     const resourceType = ref('file');
     const link = ref('');
     const file = ref(null);
-    const statusMessage = ref('');
     const resources = ref([]);
     const accesses = ref([]);
     const isEditing = ref(false);
     const currentResourceId = ref(null);
 
-    const showAlert = (message) => {
-      statusMessage.value = message;
-      setTimeout(() => { statusMessage.value = ''; }, 5000); // Remove mensagem após 5 segundos
-    };
+    const alertComponent = ref(null); // Referência ao componente Alert
 
-    const clearAlert = () => {
-      statusMessage.value = '';
+    const showAlert = (message, type = 'info') => {
+      if (alertComponent.value) {
+        alertComponent.value.showAlert(message, type);
+      }
     };
 
     const handleSubmit = async () => {
@@ -133,7 +131,7 @@ export default {
           createdAt: new Date(),
         });
 
-        showAlert('Recurso enviado com sucesso!');
+        showAlert('Recurso enviado com sucesso!', 'success');
         fetchResources();
         // Limpar campos
         title.value = '';
@@ -143,7 +141,7 @@ export default {
         isEditing.value = false;
         currentResourceId.value = null;
       } catch (err) {
-        showAlert('Erro ao enviar o recurso. Tente novamente mais tarde.');
+        showAlert('Erro ao enviar o recurso. Tente novamente mais tarde.', 'error');
         console.error(err);
       }
     };
@@ -167,7 +165,7 @@ export default {
           url: resourceUrl,
         });
 
-        showAlert('Recurso atualizado com sucesso!');
+        showAlert('Recurso atualizado com sucesso!', 'success');
         fetchResources();
         // Limpar campos
         title.value = '';
@@ -177,7 +175,7 @@ export default {
         isEditing.value = false;
         currentResourceId.value = null;
       } catch (err) {
-        showAlert('Erro ao atualizar o recurso. Tente novamente mais tarde.');
+        showAlert('Erro ao atualizar o recurso. Tente novamente mais tarde.', 'error');
         console.error(err);
       }
     };
@@ -187,7 +185,7 @@ export default {
         const querySnapshot = await getDocs(collection(db, 'resources'));
         resources.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       } catch (err) {
-        showAlert('Erro ao carregar os recursos.');
+        showAlert('Erro ao carregar os recursos.', 'error');
         console.error(err);
       }
     };
@@ -197,7 +195,7 @@ export default {
         const querySnapshot = await getDocs(collection(db, 'access_logs'));
         accesses.value = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       } catch (err) {
-        showAlert('Erro ao carregar os logs de acesso.');
+        showAlert('Erro ao carregar os logs de acesso.', 'error');
         console.error(err);
       }
     };
@@ -205,10 +203,10 @@ export default {
     const deleteResource = async (resourceId) => {
       try {
         await deleteDoc(doc(db, 'resources', resourceId));
-        showAlert('Recurso excluído com sucesso!');
+        showAlert('Recurso excluído com sucesso!', 'success');
         fetchResources();
       } catch (err) {
-        showAlert('Erro ao excluir o recurso.');
+        showAlert('Erro ao excluir o recurso.', 'error');
         console.error(err);
       }
     };
@@ -220,24 +218,21 @@ export default {
       link.value = resource.url;
       currentResourceId.value = resource.id;
       isEditing.value = true;
+      showAlert('Você está editando um recurso.', 'info'); // Alerta de edição
     };
 
     onMounted(() => {
       fetchResources();
       fetchAccessLogs();
-      onSnapshot(collection(db, 'access_logs'), (snapshot) => {
-        accesses.value = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      });
     });
 
     const handleFileUpload = (event) => {
       file.value = event.target.files[0];
+      showAlert('Arquivo selecionado: ' + file.value.name, 'info'); // Alerta de arquivo selecionado
     };
 
-    const formatDate = (timestamp) => {
-      if (!timestamp) return '';
-      const date = new Date(timestamp.seconds * 1000);
-      return `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
+    const formatDate = (date) => {
+      return new Date(date.seconds * 1000).toLocaleString();
     };
 
     return {
@@ -249,17 +244,16 @@ export default {
       resources,
       accesses,
       isEditing,
-      currentResourceId,
       handleSubmit,
-      handleFileUpload,
       deleteResource,
       editResource,
+      handleFileUpload,
       formatDate,
-      statusMessage,
-      clearAlert
+      showAlert,
+      alertComponent,
     };
   },
-};
+});
 </script>
 
 
@@ -269,6 +263,7 @@ export default {
   background: #f9f9f9;
   min-height: 100vh;
   font-family: "Arial", sans-serif;
+  overflow: auto;
 }
 
 .box {

@@ -22,7 +22,8 @@
           <ion-icon name="school-outline" class="select-icon"></ion-icon>
           <select v-model="role" class="register-select">
             <option value="student">Aluno</option>
-            <option value="teacher">Professor</option>
+            <option value="teacher" disabled>Professor </option>
+            <ion-icon name="lock-closed-outline"></ion-icon>
           </select>
         </div>
         <button type="submit" class="register-button">Registrar <ion-icon name="checkmark-outline"></ion-icon></button>
