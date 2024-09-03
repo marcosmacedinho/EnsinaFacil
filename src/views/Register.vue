@@ -2,34 +2,46 @@
 <template>
   <div class="register-container">
     <div class="register-card">
-      <h2 class="register-title">Registrar</h2>
+      <h2 class="register-title">Registrar <ion-icon name="person-add-outline"></ion-icon></h2>
       <form @submit.prevent="register" class="register-form">
-        <input
-          v-model="name"
-          type="text"
-          placeholder="Nome"
-          class="register-input"
-          required
-        />
-        <input
-          v-model="email"
-          type="email"
-          placeholder="Email"
-          class="register-input"
-          required
-        />
-        <input
-          v-model="password"
-          type="password"
-          placeholder="Senha"
-          class="register-input"
-          required
-        />
-        <select v-model="role" class="register-select">
-          <option value="student">Aluno</option>
-          <option value="teacher">Professor</option>
-        </select>
-        <button type="submit" class="register-button">Registrar</button>
+        <div class="input-group">
+          <ion-icon name="person-outline" class="input-icon"></ion-icon>
+          <input
+            v-model="name"
+            type="text"
+            placeholder="Nome"
+            class="register-input"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+          <input
+            v-model="email"
+            type="email"
+            placeholder="Email"
+            class="register-input"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+          <input
+            v-model="password"
+            type="password"
+            placeholder="Senha"
+            class="register-input"
+            required
+          />
+        </div>
+        <div class="select-group">
+          <ion-icon name="school-outline" class="select-icon"></ion-icon>
+          <select v-model="role" class="register-select">
+            <option value="student">Aluno</option>
+            <option value="teacher">Professor</option>
+          </select>
+        </div>
+        <button type="submit" class="register-button">Registrar <ion-icon name="checkmark-outline"></ion-icon></button>
       </form>
       <div class="login-link">
         <p>Já tem uma conta?</p>
@@ -43,8 +55,9 @@
 import { auth, db } from '../firebase';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
   data() {
     return {
       name: '',
@@ -73,7 +86,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style scoped>
@@ -108,14 +121,30 @@ export default {
   flex-direction: column;
 }
 
+.input-group,
+.select-group {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.input-icon,
+.select-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2em;
+  color: #aaa;
+}
+
 .register-input,
 .register-select {
-  padding: 12px;
-  margin-bottom: 15px;
+  padding: 12px 12px 12px 40px; /* Add left padding for icon */
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1em;
   transition: border-color 0.3s;
+  width: 100%;
 }
 
 .register-input:focus,

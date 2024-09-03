@@ -1,24 +1,31 @@
-<!-- src/views/Login.vue -->
 <template>
   <div class="login-container">
     <div class="login-card">
-      <h2 class="login-title">Login</h2>
+      <h2 class="login-title">Login <ion-icon name="log-in-outline"></ion-icon></h2>
       <form @submit.prevent="login" class="login-form">
-        <input
-          v-model="email"
-          type="email"
-          placeholder="Email"
-          class="login-input"
-          required
-        />
-        <input
-          v-model="password"
-          type="password"
-          placeholder="Senha"
-          class="login-input"
-          required
-        />
-        <button type="submit" class="login-button">Entrar</button>
+        <div class="input-group">
+          <ion-icon name="mail-outline" class="input-icon"></ion-icon>
+          <input
+            v-model="email"
+            type="email"
+            placeholder="Email"
+            class="login-input"
+            required
+          />
+        </div>
+        <div class="input-group">
+          <ion-icon name="lock-closed-outline" class="input-icon"></ion-icon>
+          <input
+            v-model="password"
+            type="password"
+            placeholder="Senha"
+            class="login-input"
+            required
+          />
+        </div>
+        <button type="submit" class="login-button">
+          <ion-icon name="enter-outline"></ion-icon> Partiu
+        </button>
       </form>
       <div class="register-link">
         <p>Não tem uma conta?</p>
@@ -32,8 +39,9 @@
 import { auth, db } from "../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
   data() {
     return {
       email: "",
@@ -69,7 +77,7 @@ export default {
       }
     },
   },
-};
+});
 </script>
 
 <style scoped>
@@ -104,13 +112,27 @@ export default {
   flex-direction: column;
 }
 
-.login-input {
-  padding: 12px;
+.input-group {
+  position: relative;
   margin-bottom: 15px;
+}
+
+.input-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.2em;
+  color: #aaa;
+}
+
+.login-input {
+  padding: 12px 12px 12px 40px; /* Add left padding for icon */
   border: 1px solid #ddd;
   border-radius: 8px;
   font-size: 1em;
   transition: border-color 0.3s;
+  width: 100%;
 }
 
 .login-input:focus {
@@ -127,6 +149,10 @@ export default {
   cursor: pointer;
   font-size: 1.1em;
   transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
 
 .login-button:hover {

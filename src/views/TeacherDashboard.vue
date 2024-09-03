@@ -4,17 +4,17 @@
 
     <!-- Caixa de Envio de Recursos -->
     <div class="box">
-      <h3>{{ isEditing ? 'Editar Recurso' : 'Enviar Recurso' }}</h3>
+      <h3>{{ isEditing ? 'Editar Recurso' : 'Enviar Recurso' }} <ion-icon name="create-outline"></ion-icon></h3>
       <form @submit.prevent="handleSubmit" class="upload-form">
         <input v-model="title" type="text" placeholder="Título" required class="input-field" />
         <textarea v-model="description" placeholder="Descrição" required class="input-field textarea"></textarea>
 
         <div class="resource-type">
           <label>
-            <input type="radio" value="file" v-model="resourceType" /> Arquivo
+            <input type="radio" value="file" v-model="resourceType" /> Arquivo <ion-icon name="document-outline"></ion-icon>
           </label>
           <label>
-            <input type="radio" value="link" v-model="resourceType" /> Link
+            <input type="radio" value="link" v-model="resourceType" /> Link <ion-icon name="link-outline"></ion-icon>
           </label>
         </div>
 
@@ -25,25 +25,27 @@
           <input v-model="link" type="url" placeholder="URL do Link" class="input-field" />
         </div>
 
-        <button type="submit" class="submit-button">{{ isEditing ? 'Atualizar' : 'Enviar' }}</button>
+        <button type="submit" class="submit-button">{{ isEditing ? 'Atualizar' : 'Enviar' }} <ion-icon name="send-outline"></ion-icon></button>
       </form>
 
       <!-- Mensagem de status -->
-      <div v-if="statusMessage" class="status-message">{{ statusMessage }}</div>
+      <div v-if="statusMessage" class="status-message">
+        <ion-icon name="information-circle-outline"></ion-icon> {{ statusMessage }}
+      </div>
     </div>
 
     <!-- Caixa de Recursos Enviados -->
     <div class="box">
-      <h3>Recursos Enviados</h3>
+      <h3>Recursos Enviados <ion-icon name="albums-outline"></ion-icon></h3>
       <ul class="resource-list">
         <li v-for="resource in resources" :key="resource.id" class="resource-item">
           <strong>{{ resource.title }}</strong> - {{ resource.description }}
-          <a :href="resource.url" target="_blank" class="resource-link">Acessar</a>
+          <a :href="resource.url" target="_blank" class="resource-link">Acessar <ion-icon name="open-outline"></ion-icon></a>
           <div class="dropdown">
-            <button class="dropdown-btn">⋮</button>
+            <button class="dropdown-btn"><ion-icon name="ellipsis-vertical-outline"></ion-icon></button>
             <div class="dropdown-content">
-              <a @click="editResource(resource)">Editar</a>
-              <a @click="deleteResource(resource.id)">Excluir</a>
+              <a @click="editResource(resource)">Editar <ion-icon name="create-outline"></ion-icon></a>
+              <a @click="deleteResource(resource.id)">Excluir <ion-icon name="trash-outline"></ion-icon></a>
             </div>
           </div>
         </li>
@@ -52,7 +54,7 @@
 
     <!-- Caixa de Monitoramento de Acessos -->
     <div class="box">
-      <h3>Monitoramento de Acessos</h3>
+      <h3>Monitoramento de Acessos <ion-icon name="eye-outline"></ion-icon></h3>
       <table class="access-table">
         <thead>
           <tr>
@@ -72,6 +74,7 @@
     </div>
   </div>
 </template>
+
 
 <script>
 import { ref, onMounted } from 'vue';
@@ -276,8 +279,15 @@ export default {
 }
 
 .box h3 {
-  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  font-size: 1.2rem;
   color: #333;
+  margin-bottom: 15px;
+}
+
+.box h3 ion-icon {
+  margin-left: 10px;
   font-size: 1.2rem;
 }
 
@@ -304,7 +314,54 @@ export default {
 
 .file-input {
   margin-bottom: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+  position: relative;
 }
+
+.file-input::before {
+  content: 'Escolher arquivo';
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #333;
+}
+
+.file-input input[type="file"] {
+  position: absolute;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.file-input .file-name {
+  margin-left: 10px;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #555;
+}
+
+.file-input:hover {
+  border-color: #007bff;
+  background: #f1f1f1;
+}
+
+.file-input:focus-within {
+  border-color: #007bff;
+  outline: none;
+}
+
 
 .submit-button {
   background: #007bff;
@@ -315,6 +372,12 @@ export default {
   font-weight: bold;
   cursor: pointer;
   transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+}
+
+.submit-button ion-icon {
+  margin-left: 5px;
 }
 
 .submit-button:hover {
@@ -365,7 +428,8 @@ export default {
 }
 
 .dropdown-content a {
-  display: block;
+  display: flex;
+  align-items: center;
   padding: 8px 16px;
   color: #007bff;
   text-decoration: none;
@@ -397,7 +461,6 @@ export default {
   padding: 10px;
   text-align: center;
   border: 1px solid #909090;
-  text-align: center;
 }
 
 .access-table th {
@@ -407,5 +470,11 @@ export default {
 .access-table tr:nth-child(even) {
   background-color: #f9f9f9;
 }
+
+.teacher-dashboard ion-icon {
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
 </style>
 
