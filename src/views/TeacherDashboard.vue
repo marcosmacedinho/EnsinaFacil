@@ -397,7 +397,7 @@ export default {
   padding: 10px;
   text-align: center;
   border: 1px solid #909090;
-
+  text-align: center;
 }
 
 .access-table th {
