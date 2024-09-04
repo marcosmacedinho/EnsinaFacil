@@ -263,7 +263,6 @@ export default defineComponent({
   background: #f9f9f9;
   min-height: 100vh;
   font-family: "Arial", sans-serif;
-  overflow: auto;
 }
 
 .box {

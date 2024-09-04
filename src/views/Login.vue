@@ -26,6 +26,15 @@
             required
           />
         </div>
+        <div class="remember-me-group">
+          <input
+            v-model="rememberMe"
+            type="checkbox"
+            id="rememberMe"
+            class="remember-me-checkbox"
+          />
+          <label for="rememberMe" class="remember-me-label">Lembrar-me</label>
+        </div>
         <button type="submit" class="login-button">
           Partiu
           <ion-icon name="enter-outline"></ion-icon>
@@ -38,7 +47,6 @@
     </div>  
   </div>
 </template>
-
 
 <script>
 import { auth, db } from "../firebase";
@@ -55,7 +63,16 @@ export default defineComponent({
     return {
       email: "",
       password: "",
+      rememberMe: false, // Adicionado para controlar a opção de lembrar-me
     };
+  },
+  mounted() {
+    // Carregar credenciais do armazenamento local, se existirem
+    const savedEmail = localStorage.getItem('savedEmail');
+    if (savedEmail) {
+      this.email = savedEmail;
+      this.rememberMe = true; // Assumir que a opção estava ativada
+    }
   },
   methods: {
     async login() {
@@ -73,6 +90,13 @@ export default defineComponent({
 
           // Exibe alerta de sucesso
           this.$refs.alertComponent.showAlert('Login realizado com sucesso!', 'success');
+
+          // Salva o email no localStorage se a opção 'Lembrar-me' estiver marcada
+          if (this.rememberMe) {
+            localStorage.setItem('savedEmail', this.email);
+          } else {
+            localStorage.removeItem('savedEmail');
+          }
 
           // Redireciona para o dashboard correto
           setTimeout(() => {
@@ -188,6 +212,20 @@ export default defineComponent({
   color: #666;
 }
 
+.remember-me-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.remember-me-checkbox {
+  margin-right: 5px;
+}
+
+.remember-me-label {
+  font-size: 0.9em;
+  color: #666;
+}
 .register-button {
   color: #007bff;
   text-decoration: none;

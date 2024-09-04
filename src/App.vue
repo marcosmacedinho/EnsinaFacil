@@ -12,5 +12,8 @@ export default {
 </script>
 
 <style>
-/* Estilos globais, se necessário */
+html, body{
+  overflow: auto;
+  min-height: 100dvh;
+}
 </style>
